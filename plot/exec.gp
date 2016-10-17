@@ -7,4 +7,6 @@ set output 'runtime.png'
 
 plot "sse.txt" using 1 with linespoints title "sse prefetch" , \
      "sse.txt" using 2 with linespoints title "sse", \
-     "sse.txt" using 3 with linespoints title "naive"
+     "sse.txt" using 3 with linespoints title "naive", \
+     "sse.txt" using 4 with linespoints title "avx" , \
+     "sse.txt" using 5 with linespoints title "avx prefetch"

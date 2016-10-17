@@ -1,4 +1,4 @@
-CFLAGS = -msse2 --std gnu99 -O0 -Wall
+CFLAGS = -msse2 -mavx2 --std gnu99 -O0 -Wall
 
 GIT_HOOKS := .git/hooks/pre-commit
 
