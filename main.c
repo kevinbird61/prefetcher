@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
 {
     /* verify the result of 4x4 matrix */
     {
+#ifdef DEBUG
         int testin[16] = { 0, 1,  2,  3,  4,  5,  6,  7,
                            8, 9, 10, 11, 12, 13, 14, 15
                          };
@@ -40,7 +41,6 @@ int main(int argc, char *argv[])
         int expected[16] = { 0, 4,  8, 12, 1, 5,  9, 13,
                              2, 6, 10, 14, 3, 7, 11, 15
                            };
-
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++)
                 printf(" %2d", testin[y * 4 + x]);
@@ -55,10 +55,11 @@ int main(int argc, char *argv[])
         }
         assert(0 == memcmp(testout, expected, 16 * sizeof(int)) &&
                "Verification fails");
+#endif
     }
 
     {
-        struct timespec start, end;
+        struct timespec start,start2,start3, end,end2,end3;
         int *src  = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
         int *out0 = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
         int *out1 = (int *) malloc(sizeof(int) * TEST_W * TEST_H);
@@ -68,22 +69,20 @@ int main(int argc, char *argv[])
         for (int y = 0; y < TEST_H; y++)
             for (int x = 0; x < TEST_W; x++)
                 *(src + y * TEST_W + x) = rand();
-
+#ifdef ANALYSIS
         clock_gettime(CLOCK_REALTIME, &start);
         sse_prefetch_transpose(src, out0, TEST_W, TEST_H);
         clock_gettime(CLOCK_REALTIME, &end);
-        printf("sse prefetch: \t %ld us\n", diff_in_us(start, end));
 
-        clock_gettime(CLOCK_REALTIME, &start);
+        clock_gettime(CLOCK_REALTIME, &start2);
         sse_transpose(src, out1, TEST_W, TEST_H);
-        clock_gettime(CLOCK_REALTIME, &end);
-        printf("sse: \t\t %ld us\n", diff_in_us(start, end));
+        clock_gettime(CLOCK_REALTIME, &end2);
 
-        clock_gettime(CLOCK_REALTIME, &start);
+        clock_gettime(CLOCK_REALTIME, &start3);
         naive_transpose(src, out2, TEST_W, TEST_H);
-        clock_gettime(CLOCK_REALTIME, &end);
-        printf("naive: \t\t %ld us\n", diff_in_us(start, end));
-
+        clock_gettime(CLOCK_REALTIME, &end3);
+        printf("%ld, %ld, %ld\n",diff_in_us(start, end),diff_in_us(start2, end2),diff_in_us(start3, end3));
+#endif
         free(src);
         free(out0);
         free(out1);
